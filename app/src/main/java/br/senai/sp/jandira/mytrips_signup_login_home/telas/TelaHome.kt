@@ -2,7 +2,6 @@ package br.senai.sp.jandira.mytrips_signup_login_home.telas
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,14 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,8 +28,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -45,11 +39,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.mytrips_signup_login_home.R
+import br.senai.sp.jandira.mytrips_signup_login_home.repository.CategoriasRepository
+import br.senai.sp.jandira.mytrips_signup_login_home.repository.ViagemRepository
+import br.senai.sp.jandira.mytrips_signup_login_home.simplificarData
 import br.senai.sp.jandira.mytrips_signup_login_home.ui.theme.MyTripsSignUp_Login_HomeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TelaHome() {
+fun TelaHome(controleDeNavegacao: NavHostController?) {
+
+    val viagens = ViagemRepository().listarTodasAsViagens()
+    val categorias = CategoriasRepository().listarTodasAsCategorias()
     Column (
         modifier = Modifier.fillMaxSize()
     ){
@@ -131,7 +131,7 @@ fun TelaHome() {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ){
-                item {
+                items(categorias){
                     Column (
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
@@ -141,83 +141,14 @@ fun TelaHome() {
                             .height(70.dp)
                     ){
                         Image(
-                            painter = painterResource(id = R.drawable.montanha),
+                            painter = if(it.imagem == null) painterResource(id = R.drawable.img_4) else it.imagem!!,
                             contentDescription = "",
                             modifier = Modifier
                                 .height(40.dp)
                                 .width(40.dp)
                         )
                         Text(
-                            text = "Montain",
-                            color = Color.White
-                        )
-                    }
-                }
-                item {
-                    Column (
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .background(Color(0xffcf08ef), shape = RoundedCornerShape(10.dp))
-                            .width(120.dp)
-                            .height(70.dp)
-
-                    ){
-                        Image(
-                            painter = painterResource(id = R.drawable.snow),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .height(40.dp)
-                                .width(40.dp)
-                        )
-                        Text(
-                            text = "Snow",
-                            color = Color.White
-                        )
-                    }
-                }
-                item {
-                    Column (
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .background(Color(0xffcf08ef), shape = RoundedCornerShape(10.dp))
-                            .width(120.dp)
-                            .height(70.dp)
-
-                    ){
-                        Image(
-                            painter = painterResource(id = R.drawable.praia),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .height(40.dp)
-                                .width(40.dp)
-                        )
-                        Text(
-                            text = "Beach",
-                            color = Color.White
-                        )
-                    }
-                }
-                item {
-                    Column (
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .background(Color(0xffcf08ef), shape = RoundedCornerShape(10.dp))
-                            .width(120.dp)
-                            .height(70.dp)
-
-                    ){
-                        Image(
-                            painter = painterResource(id = R.drawable.montanha),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .height(40.dp)
-                                .width(40.dp)
-                        )
-                        Text(
-                            text = "Montain",
+                            text = it.titulo,
                             color = Color.White
                         )
                     }
@@ -260,7 +191,7 @@ fun TelaHome() {
                 LazyColumn (
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ){
-                    item {
+                    items(viagens){
                         Box (
                             modifier = Modifier
                                 .shadow(8.dp, RoundedCornerShape(10.dp))
@@ -279,18 +210,18 @@ fun TelaHome() {
                                         .height(117.dp)
                                 ){
                                     Image(
-                                        painter = painterResource(id = R.drawable.london),
+                                        painter = if(it.imagem == null) painterResource(id = R.drawable.img_4) else it.imagem!!,
                                         contentDescription = "",
                                         modifier = Modifier.fillMaxSize()
                                     )
                                 }
                                 Text(
-                                    text = "London, 2019",
+                                    text = "${it.destino}, ${it.dataChegada.year}",
                                     color = Color(0xffcf08ef)
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = "London is the capital and largest city of  the United Kingdom, with a population of just under 9 million.",
+                                    text = "${it.descricao}",
                                     fontSize = 11.sp,
                                     lineHeight = 16.sp,
                                     color = Color.Gray
@@ -303,7 +234,7 @@ fun TelaHome() {
                                         .padding(end = 8.dp)
                                 ){
                                     Text(
-                                        text = "18 feb - 21 feb",
+                                        text = "${simplificarData(it.dataChegada)} - ${simplificarData(it.dataPartida)}",
                                         fontSize = 12.sp,
                                         color = Color(0xffcf08ef)
                                     )
@@ -311,57 +242,7 @@ fun TelaHome() {
                             }
                         }
                     }
-                    item {
-                        Box (
-                            modifier = Modifier
-                                .shadow(8.dp, RoundedCornerShape(10.dp))
-                                .background(Color.White)
-                                .height(220.dp)
-                                .fillMaxWidth()
-                        ){
-                            Column (
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .fillMaxWidth()
-                            ){
-                                Card (
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(117.dp)
-                                ){
-                                    Image(
-                                        painter = painterResource(id = R.drawable.porto),
-                                        contentDescription = "",
-                                        modifier = Modifier.fillMaxSize()
-                                    )
-                                }
-                                Text(
-                                    text = "London, 2019",
-                                    color = Color(0xffcf08ef)
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Porto is the second city in Portugal, the capital of the Oporto District, and one of the Iberian Peninsula's major urban areas.",
-                                    fontSize = 11.sp,
-                                    lineHeight = 16.sp,
-                                    color = Color.Gray
-                                )
-                                Row (
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.End,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(end = 8.dp)
-                                ){
-                                    Text(
-                                        text = "18 feb - 21 feb",
-                                        fontSize = 12.sp,
-                                        color = Color(0xffcf08ef)
-                                    )
-                                }
-                            }
-                        }
-                    }
+
                 }
             }
         }
@@ -376,7 +257,7 @@ fun TelaHomePreview() {
             modifier = Modifier.fillMaxSize(),
             color = Color(0xFF03A9f4)
         ) {
-//            TelaHome()
+            TelaHome(controleDeNavegacao = null)
         }
     }
 }

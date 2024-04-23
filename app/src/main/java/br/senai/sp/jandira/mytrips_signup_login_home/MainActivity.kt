@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable(route = "SignUp"){TelaSignUp(controleDeNavegacao)}
                         composable(route = "login"){ TelaLogin(controleDeNavegacao)}
-                        composable(route = "home"){ TelaHome()}
+                        composable(route = "home"){ TelaHome(controleDeNavegacao)}
                     }
                 }
             }
