@@ -1,5 +1,6 @@
 package br.senai.sp.jandira.mytrips_signup_login_home.telas
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,18 +33,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
+import br.senai.sp.jandira.mytrips_signup_login_home.repository.UsuarioRepository
 import br.senai.sp.jandira.mytrips_signup_login_home.ui.theme.MyTripsSignUp_Login_HomeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TelaLogin(controleDeNavegacao: NavHostController) {
 
-    var usuarioState = remember {
+    var emailState = remember {
         mutableStateOf("")
     }
 
@@ -58,6 +62,10 @@ fun TelaLogin(controleDeNavegacao: NavHostController) {
     var mensagemErrorState = remember {
         mutableStateOf("")
     }
+
+    val ur = UsuarioRepository(LocalContext.current)
+
+    var todosOsContatos = ur.buscarTodosOsUsuarios()
 
     MyTripsSignUp_Login_HomeTheme{
         Surface (
@@ -107,9 +115,9 @@ fun TelaLogin(controleDeNavegacao: NavHostController) {
                         modifier = Modifier.fillMaxWidth()
                     ){
                         OutlinedTextField(
-                            value = usuarioState.value,
+                            value = emailState.value,
                             onValueChange = {
-                                usuarioState.value = it
+                                emailState.value = it
                             },
                             isError = isErrorState.value,
                             modifier = Modifier.width(400.dp),
@@ -161,7 +169,10 @@ fun TelaLogin(controleDeNavegacao: NavHostController) {
                     ){
                         Button(
                             onClick = {
-                                      if(usuarioState.value == "aluno" && senhaState.value == "1234"){
+
+                                var (usuarioEncontrado, dadosUsuario) = ur.buscarUsuarioPeloEmailSenha(emailState.value, senhaState.value)
+
+                                      if(usuarioEncontrado){
                                           controleDeNavegacao.navigate("home")
                                       } else {
                                           isErrorState.value = true
